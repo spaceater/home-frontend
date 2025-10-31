@@ -1,0 +1,27 @@
+{
+    "area-size":[1920,1080],
+    "available-images":[
+        {"name":"Writing-and-Difference","position":[1685,908,386,564],"zindex":22},
+        {"name":"Ideas","position":[1759,166,290,439],"zindex":21},
+        {"name":"Ecrits","position":[1252,-350,324,480],"zindex":20},
+        {"name":"The-Sublime-Object-of-IDEOLOGY","position":[588,748,300,460],"zindex":19},
+        {"name":"On-Contradiction","position":[1195,840,189,261],"zindex":18},
+        {"name":"Being-and-Time","position":[843,546,379,616],"zindex":17},
+        {"name":"The-Manifesto-of-the-Communist-Party","position":[1368,801,333,500],"zindex":16},
+        {"name":"History-and-Class-Consciousness","position":[523,347,333,500],"zindex":15},
+        {"name":"The-German-Ideology","position":[447,-118,381,608],"zindex":14},
+        {"name":"On-the-World-Soul","position":[1180,111,291,486],"zindex":13},
+        {"name":"Ludwig-Feuerbach-and-the-End-of-Classical-German-Philosophy","position":[287,822,326,517],"zindex":12},
+        {"name":"The-Parallax-View","position":[1222,597,192,248],"zindex":11},
+        {"name":"Also-Sprach-Zarathustra","position":[1823,-89,274,400],"zindex":10},
+        {"name":"The-Phenomenology-of-Spirit","position":[825,-96,500,750],"zindex":9},
+        {"name":"Adventures-of-the-Dialectic","position":[206,-46,262,410],"zindex":8},
+        {"name":"Transcendental-Idealism","position":[233,271,378,588],"zindex":7},
+        {"name":"The-Economic-and-Philosophic-Manuscripts-of-1844","position":[-51,565,375,600],"zindex":6},
+        {"name":"The-Constitution-of-the-Athenians","position":[-15,279,253,377],"zindex":5},
+        {"name":"The-Critique-of-Pure-Reason","position":[1414,468,307,479],"zindex":4},
+        {"name":"The-Theory-of-Knowledge-of-Empirio-Criticism-and-of-Dialectical-Materialism","position":[1685,539,321,482],"zindex":3},
+        {"name":"The-Encyclopaedia-of-the-Philosophical-Sciences-in-Basic-Outline","position":[1451,-31,400,620],"zindex":2},
+        {"name":"On-the-Reproduction-of-Capitalism","position":[-51,-66,284,451],"zindex":1}
+    ]
+}
