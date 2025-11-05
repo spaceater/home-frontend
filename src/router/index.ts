@@ -1,13 +1,20 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../pages/home/home.vue'
+import home from '../pages/home/home.vue'
+import error from '../pages/error/error.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  // history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/'),
   routes: [
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: home
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'notFound',
+      component: error
     }
   ],
 })
