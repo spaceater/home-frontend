@@ -36,20 +36,29 @@ import { ref, onMounted } from 'vue'
 import { buildApiUrl } from '@/config/api'
 import { buildStaticUrl } from '@/config/static'
 
+const buildHomeApiUrl = (path: string): string => {
+  return buildApiUrl(`/home${path.startsWith('/') ? '' : '/'}${path}`)
+}
+
+const buildHomeStaticUrl = (path: string): string => {
+  return buildStaticUrl(`/home${path.startsWith('/') ? '' : '/'}${path}`)
+}
+
 const backgroundZoneRef = ref<HTMLDivElement | null>(null)
 const movingZoneRef = ref<HTMLDivElement | null>(null)
 const addImageButtonRef = ref<HTMLDivElement | null>(null)
 const removeImageButtonRef = ref<HTMLDivElement | null>(null)
 const background_data = ref(null)
 const moving_speed = ref(1)
-const figures_sum = ref(22)
 const time_before = ref(performance.now())
+const available_moving_image = ref<string[]>([])
 
 type MovingElement = HTMLElement & {
   position_x: number
   position_y: number
   direction_x: number
   direction_y: number
+  image_name: string
 }
 
 const goIntervalEstimate = () => { window.location.href = 'https://www.maybered.com/interval-estimate' }
@@ -69,7 +78,7 @@ const initMovingButton = () => {
 }
 
 const initBackgroundImage = async () => {
-  const response = await fetch(buildStaticUrl("/background.json"))
+  const response = await fetch(buildHomeStaticUrl("/background.json"))
   background_data.value = await response.json()
   while(await addBackgroundImage()) {}
 }
@@ -114,13 +123,13 @@ const addBackgroundImage = () => {
       height: `${background_image_data.position[3] * magnification_times}px`,
       zIndex: background_image_data.zindex
     })
+    void new_background_image.offsetWidth
     new_background_image.onload = () => {
       new_background_image.addEventListener('transitionend', ()=>resolve(true))
-      void new_background_image.offsetWidth
       new_background_image.style.opacity = "1"
     }
     new_background_image.onerror = () => resolve(false)
-    new_background_image.src = buildStaticUrl("/images/backgrounds/" + background_image_data.name + ".png")
+    new_background_image.src = buildHomeStaticUrl("/images/backgrounds/" + background_image_data.name + ".png")
   })
 }
 
@@ -172,9 +181,11 @@ const handleWindowResize = async () => {
   }
 }
 
-const initMovingImage = () => {
+const initMovingImage = async () => {
+  const response = await fetch(buildHomeStaticUrl("/figure.json"))
+  available_moving_image.value = await response.json()
   const promises_list = []
-  let moving_image_sum =Math.ceil(Math.random() * figures_sum.value)
+  let moving_image_sum = Math.ceil(Math.random() * available_moving_image.value.length)
   for(let i = 0; i < moving_image_sum; i++){
     promises_list.push(addMovingImage())
   }
@@ -207,50 +218,42 @@ const initMovingImage = () => {
 const addMovingImage = () => {
   return new Promise((resolve) => {
     if (!movingZoneRef.value) return resolve(false)
-    let moving_image_index = getNewFigureIndex()
-    if(moving_image_index == -1) return resolve(false)
+    const image_name = getNewFigureName()
+    if(image_name == "") return resolve(false)
     const new_moving_image = new Image() as HTMLImageElement & MovingElement
-    new_moving_image.className = "moving_image"
-    let performance_now = performance.now()
+    new_moving_image.image_name = image_name
     new_moving_image.alt = "figure image"
-    movingZoneRef.value.appendChild(new_moving_image)
     new_moving_image.onload = () => {
       if(new_moving_image.naturalWidth > new_moving_image.naturalHeight){
         new_moving_image.style.width = "8rem"
-        new_moving_image.style.height = "auto"
       }else{
         new_moving_image.style.height = "8rem"
-        new_moving_image.style.width = "auto"
       }
-      new_moving_image.addEventListener('transitionend', ()=>resolve(true))
+      new_moving_image.className = "moving_image"
+      movingZoneRef.value?.appendChild(new_moving_image)
       void new_moving_image.offsetWidth
+      new_moving_image.addEventListener('transitionend', ()=>resolve(true))
       new_moving_image.style.opacity = "1"
       resetMovingImageDirection(new_moving_image)
       resetMovingImagePosition(new_moving_image)
       new_moving_image.addEventListener("click",()=>refreshMovingImage(new_moving_image));
       resolve(true)
     }
-    new_moving_image.onerror = () => resolve(false)
-    new_moving_image.src = buildStaticUrl("/images/figures/" + moving_image_index + ".webp")
+    new_moving_image.onerror = () => {
+      available_moving_image.value.push(image_name)
+      if (new_moving_image.parentNode) {
+        new_moving_image.remove()
+      }
+      resolve(false)
+    }
+    new_moving_image.src = buildHomeStaticUrl("/images/figures/" + image_name + ".jpg")
   })
 }
 
-const getNewFigureIndex = (): number => {
-  const index_list = Array.from({length: figures_sum.value}, (_: unknown, i: number) => i)
-  for(const el of document.querySelectorAll(".moving_image")){
-    const moving_image = el as HTMLImageElement
-    const src = moving_image.getAttribute("src") || ""
-    const parts = src.split('/')
-    const last = parts[parts.length - 1] ?? ""
-    const index = parseInt((last.split('.')[0] ?? ""))
-    if (!isNaN(index)) {
-      const idx = index_list.indexOf(index)
-      if (idx !== -1) index_list.splice(idx, 1)
-    }
-  }
-  if (index_list.length === 0) return -1
-  const idx = Math.floor(Math.random() * index_list.length)
-  return index_list[idx]!
+const getNewFigureName = (): string => {
+  if (available_moving_image.value.length === 0) return ""
+  const random_index = Math.floor(Math.random() * available_moving_image.value.length)
+  return available_moving_image.value.splice(random_index, 1)[0] ?? ""
 }
 
 const resetMovingImageDirection = (moving_image: MovingElement) => {
@@ -263,14 +266,13 @@ const resetMovingImagePosition = (moving_image: MovingElement) => {
   const moving_zone_width = movingZoneRef.value.clientWidth;
   const moving_zone_height = movingZoneRef.value.clientHeight;
   let is_satisfied = false;
-  let new_position_x: number = 0;
-  let new_position_y: number = 0;
+  let new_position_x = 0;
+  let new_position_y = 0;
   while(!is_satisfied){
     new_position_x = Math.random() * (moving_zone_width - moving_image.offsetWidth);
     new_position_y = Math.random() * (moving_zone_height - moving_image.offsetHeight);
     is_satisfied = true;
-    for(const el of document.querySelectorAll(".moving_button")){
-      const moving_button = el as MovingElement
+    for(const moving_button of document.querySelectorAll<MovingElement>(".moving_button")){
       if( new_position_x < moving_button.position_x + moving_button.offsetWidth &&
         new_position_x + moving_image.offsetWidth > moving_button.position_x &&
         new_position_y < moving_button.position_y + moving_button.offsetHeight &&
@@ -285,33 +287,38 @@ const resetMovingImagePosition = (moving_image: MovingElement) => {
 }
 
 const refreshMovingImage = (moving_image: MovingElement) => {
-  let moving_image_index = getNewFigureIndex();
-  if(moving_image_index == -1){
-    resetMovingImageDirection(moving_image);
-    return;
+  const image_name = getNewFigureName()
+  if(image_name == ""){
+    resetMovingImageDirection(moving_image)
+    return
   }
   if (!movingZoneRef.value) return
   const new_moving_image = new Image() as HTMLImageElement & MovingElement
-  movingZoneRef.value.appendChild(new_moving_image)
-  new_moving_image.className = "moving_image"
+  new_moving_image.image_name = image_name
   new_moving_image.alt = "figure image"
   new_moving_image.onload = ()=>{
     if(new_moving_image.naturalWidth > new_moving_image.naturalHeight){
       new_moving_image.style.width = "8rem"
-      new_moving_image.style.height = "auto"
     }else{
       new_moving_image.style.height = "8rem"
-      new_moving_image.style.width = "auto"
     }
+    new_moving_image.className = "moving_image"
+    movingZoneRef.value!.appendChild(new_moving_image)
+    void new_moving_image.offsetWidth
     new_moving_image.position_x = moving_image.position_x
     new_moving_image.position_y = moving_image.position_y
-    void new_moving_image.offsetWidth
     new_moving_image.style.opacity = "1"
     removeMovingImage(moving_image, false)
     resetMovingImageDirection(new_moving_image)
-    new_moving_image.addEventListener("click",function(){refreshMovingImage(new_moving_image);});
+    new_moving_image.addEventListener("click",()=>refreshMovingImage(new_moving_image))
   }
-  new_moving_image.src = buildStaticUrl("/images/figures/" + moving_image_index + ".webp")
+  new_moving_image.onerror = () => {
+    available_moving_image.value.push(image_name)
+    if (new_moving_image.parentNode) {
+      new_moving_image.remove()
+    }
+  }
+  new_moving_image.src = buildHomeStaticUrl("/images/figures/" + image_name + ".jpg")
 }
 
 const moveButtonsAndImages = (time_now: number) => {
@@ -353,8 +360,7 @@ const moveImages = (interval: number) => {
     const image_position_y = moving_image.position_y;
     let image_next_position_x = image_position_x + moving_image.direction_x * interval * moving_speed.value;
     let image_next_position_y = image_position_y + moving_image.direction_y * interval * moving_speed.value;
-    for(const btn of document.querySelectorAll(".moving_button")){
-      const moving_button = btn as MovingElement
+    for(const moving_button of document.querySelectorAll<MovingElement>(".moving_button")){
       let button_position_x = moving_button.position_x;
       let button_position_y = moving_button.position_y;
       if (image_next_position_x < button_position_x + moving_button.offsetWidth &&
@@ -382,9 +388,10 @@ const moveImages = (interval: number) => {
     }else if(image_next_position_y + moving_image.offsetHeight > movingZoneRef.value.clientHeight){
       moving_image.direction_y = -Math.abs(moving_image.direction_y);
     }
-    //渲染
-    moving_image.style.transform = `translate(${(moving_image.position_x+=moving_image.direction_x*interval*moving_speed.value)}px,${(moving_image.position_y+=moving_image.direction_y*interval*moving_speed.value)}px)`;
-    //与Button重合则销毁
+    moving_image.position_x += moving_image.direction_x*interval*moving_speed.value
+    moving_image.position_y += moving_image.direction_y*interval*moving_speed.value
+    moving_image.style.transform = `translate(${moving_image.position_x}px,${moving_image.position_y}px)`;
+    // 与Button重合则销毁
     for(const moving_button of document.querySelectorAll<MovingElement>(".moving_button")){
       if (moving_image.position_x < moving_button.position_x + moving_button.offsetWidth &&
         moving_image.position_x + moving_image.offsetWidth > moving_button.position_x &&
@@ -398,22 +405,26 @@ const moveImages = (interval: number) => {
   }
 }
 
-const removeMovingImage = (moving_image: MovingElement, fade_out=true) => {
-  console.log(moving_image)
-  if(fade_out){
+const removeMovingImage = (moving_image: MovingElement, fade=true) => {
+
+  if (moving_image.image_name != "") {
+    available_moving_image.value.push(moving_image.image_name)
+    moving_image.image_name = ""
+  }
+  if(fade){
+    moving_image.className = "moving_image_fade"
+    void moving_image.offsetWidth
     moving_image.style.opacity = "0"
     moving_image.addEventListener("transitionend", ()=>{
       moving_image.remove();
     });
-    moving_image.classList.remove("moving_image");
   }else{
-    moving_image.classList.remove("moving_image");
-    moving_image.remove();
+    moving_image.remove()
   }
 }
 
 const showPageView = async () => {
-  const response = await fetch(buildApiUrl("/home/page_view"));
+  const response = await fetch(buildHomeApiUrl("/page_view"));
   const data = await response.json();
   const el = document.querySelector("#page_view p")
   if (el) el.textContent = String(data["page_view"]);
@@ -422,7 +433,7 @@ const showPageView = async () => {
 onMounted(() => {
   document.documentElement.style.fontSize = Math.max(screen.width, screen.height) / 96 + "px"
   initMovingButton();
-  //showPageView();
+  showPageView();
   requestAnimationFrame(moveButtonsAndImages);
   window.addEventListener("resize", handleWindowResize);
   initBackgroundImage().then(() => {
@@ -612,7 +623,6 @@ body::-webkit-scrollbar{
 
 </style>
 
-<!-- 全局样式：用于动态创建的 DOM 元素（使用具体选择器限制作用域） -->
 <style>
 
 #show_area .background_image{
@@ -624,25 +634,18 @@ body::-webkit-scrollbar{
 
 #show_area .moving_image{
   position: absolute;
-  max-width: 8rem;
-  max-height: 8rem;
-  transform: translate(-10rem, -10rem);
   box-shadow: 1rem 0.64rem 0.25rem 0.25rem rgb(0,0,0,0.6);
   cursor: zoom-in;
   transition: opacity 0.4s;
   opacity: 0;
 }
 
-@keyframes imageFadeOut {
-    0% {opacity: 1;}
-    100% {opacity: 0;}
+#show_area .moving_image_fade{
+  position: absolute;
+  box-shadow: 1rem 0.64rem 0.25rem 0.25rem rgb(0,0,0,0.6);
+  cursor: zoom-in;
+  transition: opacity 0.4s;
+  opacity: 1;
 }
-#show_area .image_fade_out{
-    z-index: 0;
-    position: absolute;
-    max-width: 8rem;
-    max-height: 8rem;
-    box-shadow: 1rem 0.64rem 0.25rem 0.25rem rgb(0,0,0,0.6);
-    animation: imageFadeOut 0.3s;
-}
+
 </style>
