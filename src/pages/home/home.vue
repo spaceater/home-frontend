@@ -33,6 +33,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 import { buildApiUrl } from '@/config/api'
 import { buildStaticUrl } from '@/config/static'
 
@@ -61,7 +63,7 @@ type MovingElement = HTMLElement & {
   image_name: string
 }
 
-const goIntervalEstimate = () => { window.location.href = 'https://www.maybered.com/interval-estimate' }
+const goIntervalEstimate = () => { router.push('/interval-estimate') }
 const goBook = () => { window.location.href = 'https://spaceater.github.io/The-Capitalist-Unconscious-Marx-and-Lacan/' }
 const goIsmismcube = () => { window.location.href = 'https://www.ismismtag.com' }
 const goAi = () => { window.location.href = 'https://www.ismismtag.com/ai' }
@@ -447,8 +449,6 @@ onMounted(() => {
 
 *{
   font-family: "Microsoft YaHei",sans-serif;
-  padding: 0;
-  margin: 0;
 }
 
 html{

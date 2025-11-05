@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区间估计</title>
+    <script>
+        document.documentElement.style.fontSize = Math.max(screen.width,screen.height) / 96 + "px";
+    </script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: absolute;left: 50%;transform: translateX(-50%);top: 1rem;width: 14rem;height: 7rem;background-color: rgb(200, 200, 200);">
+        <label id="σ_value" for="range" style="position: absolute;left: 1rem;top: 0.8rem;">σ 1</label>
+        <input id="σ" type="range" min="0" max="1" step="1" value="1" onchange="document.getElementById('σ_value').innerHTML='σ'+(this.value==0?'未知':' 1')" style="position: absolute;left: 3.6rem;top: 1rem;width: 5rem;">
+        <label id="n_value" for="range" style="position: absolute;left: 1rem;top: 2.8rem;">n 10</label>
+        <input id="n" type="range" min="5" max="20" step="1" value="10" onchange="document.getElementById('n_value').innerHTML='n '+this.value" style="position: absolute;left: 3.6rem;top: 3rem;width: 10rem;">
+        <label id="α_value" for="range" style="position: absolute;left: 1rem;top: 4.8rem;">α 0.8</label>
+        <input id="α" type="range" min="0" max="4" step="1" value="3" onchange="document.getElementById('α_value').innerHTML='α '+(this.value==0?0.5:(this.value==0?0.5:(this.value==1?0.6:(this.value==2?0.7:(this.value==3?0.8:0.9)))))" style="position: absolute;left: 3.6rem;top: 5rem;width: 10rem;">
+        <button id="start" onclick="startSimulation()" style="position: absolute;left: 9.6rem;top: 1rem;width: 3rem;">Start</button>
+    </div>
+    <div style="position: absolute;left: 50%;transform: translateX(-50%);top: 12rem;height: 40rem;width: 50rem;background-color: rgb(230, 230, 230);">
+        <div style="position: absolute;left: -0.75rem;top: -0.75rem;">2</div>
+        <div style="position: absolute;left: -0.75rem;top: 9.2rem;">1</div>
+        <div style="position: absolute;left: -0.75rem;top: 19.2rem;">0</div>
+        <div style="position: absolute;left: -1.1rem;top: 29.2rem;">-1</div>
+        <div style="position: absolute;left: -1.2rem;top: 39.15rem;">-2</div>
+        <div style="z-index: 1;position: absolute;left: 0;top: -1px;height: 2px;width: 50rem;background-color: black;"></div>
+        <div style="z-index: 1;position: absolute;left: 0;top: calc(10rem - 1px);height: 2px;width: 50rem;background-color: black;"></div>
+        <div style="z-index: 1;position: absolute;left: 0;top: calc(20rem - 1px);height: 2px;width: 50rem;background-color: black;"></div>
+        <div style="z-index: 1;position: absolute;left: 0;top: calc(30rem - 1px);height: 2px;width: 50rem;background-color: black;"></div>
+        <div style="z-index: 1;position: absolute;left: 0;top: calc(40rem - 1px);height: 2px;width: 50rem;background-color: black;"></div>
+        <p id="explanation" style="z-index: 1;position: absolute;left: 0;top: -3rem;"></p>
+        <div id="result_0" style="position: absolute;left: 0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_1" style="position: absolute;left: 0.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_2" style="position: absolute;left: 1.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_3" style="position: absolute;left: 1.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_4" style="position: absolute;left: 2.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_5" style="position: absolute;left: 2.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_6" style="position: absolute;left: 3.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_7" style="position: absolute;left: 3.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_8" style="position: absolute;left: 4.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_9" style="position: absolute;left: 4.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_10" style="position: absolute;left: 5.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_11" style="position: absolute;left: 5.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_12" style="position: absolute;left: 6.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_13" style="position: absolute;left: 6.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_14" style="position: absolute;left: 7.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_15" style="position: absolute;left: 7.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_16" style="position: absolute;left: 8.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_17" style="position: absolute;left: 8.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_18" style="position: absolute;left: 9.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_19" style="position: absolute;left: 9.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_20" style="position: absolute;left: 10.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_21" style="position: absolute;left: 10.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_22" style="position: absolute;left: 11.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_23" style="position: absolute;left: 11.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_24" style="position: absolute;left: 12.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_25" style="position: absolute;left: 12.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_26" style="position: absolute;left: 13.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_27" style="position: absolute;left: 13.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_28" style="position: absolute;left: 14.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_29" style="position: absolute;left: 14.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_30" style="position: absolute;left: 15.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_31" style="position: absolute;left: 15.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_32" style="position: absolute;left: 16.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_33" style="position: absolute;left: 16.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_34" style="position: absolute;left: 17.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_35" style="position: absolute;left: 17.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_36" style="position: absolute;left: 18.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_37" style="position: absolute;left: 18.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_38" style="position: absolute;left: 19.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_39" style="position: absolute;left: 19.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_40" style="position: absolute;left: 20.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_41" style="position: absolute;left: 20.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_42" style="position: absolute;left: 21.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_43" style="position: absolute;left: 21.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_44" style="position: absolute;left: 22.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_45" style="position: absolute;left: 22.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_46" style="position: absolute;left: 23.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_47" style="position: absolute;left: 23.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_48" style="position: absolute;left: 24.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_49" style="position: absolute;left: 24.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_50" style="position: absolute;left: 25.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_51" style="position: absolute;left: 25.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_52" style="position: absolute;left: 26.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_53" style="position: absolute;left: 26.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_54" style="position: absolute;left: 27.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_55" style="position: absolute;left: 27.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_56" style="position: absolute;left: 28.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_57" style="position: absolute;left: 28.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_58" style="position: absolute;left: 29.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_59" style="position: absolute;left: 29.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_60" style="position: absolute;left: 30.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_61" style="position: absolute;left: 30.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_62" style="position: absolute;left: 31.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_63" style="position: absolute;left: 31.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_64" style="position: absolute;left: 32.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_65" style="position: absolute;left: 32.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_66" style="position: absolute;left: 33.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_67" style="position: absolute;left: 33.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_68" style="position: absolute;left: 34.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_69" style="position: absolute;left: 34.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_70" style="position: absolute;left: 35.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_71" style="position: absolute;left: 35.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_72" style="position: absolute;left: 36.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_73" style="position: absolute;left: 36.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_74" style="position: absolute;left: 37.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_75" style="position: absolute;left: 37.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_76" style="position: absolute;left: 38.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_77" style="position: absolute;left: 38.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_78" style="position: absolute;left: 39.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_79" style="position: absolute;left: 39.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_80" style="position: absolute;left: 40.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_81" style="position: absolute;left: 40.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_82" style="position: absolute;left: 41.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_83" style="position: absolute;left: 41.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_84" style="position: absolute;left: 42.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_85" style="position: absolute;left: 42.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_86" style="position: absolute;left: 43.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_87" style="position: absolute;left: 43.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_88" style="position: absolute;left: 44.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_89" style="position: absolute;left: 44.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_90" style="position: absolute;left: 45.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_91" style="position: absolute;left: 45.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_92" style="position: absolute;left: 46.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_93" style="position: absolute;left: 46.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_94" style="position: absolute;left: 47.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_95" style="position: absolute;left: 47.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_96" style="position: absolute;left: 48.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_97" style="position: absolute;left: 48.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_98" style="position: absolute;left: 49.0rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>
+        <div id="result_99" style="position: absolute;left: 49.5rem;top: 15rem;width: 0.5rem;height: 10rem;background-color: rgb(200, 200, 200);"></div>            
+    </div>
+</body>
+    <script>
+        const normal_distribution_list=[0.675,0.84,1.04,1.28,1.645]
+        const t_distribution_table=[
+            [0.740697,0.940965,1.189567,1.533206,2.131847],
+            [0.726686,0.919544,1.155767,1.475884,2.015048],
+            [0.717558,0.905703,1.134157,1.439756,1.94318],
+            [0.711141,0.89603,1.119159,1.414924,1.894579],
+            [0.706386,0.88889,1.108145,1.396815,1.859548],
+            [0.702722,0.883404,1.099716,1.383029,1.833113],
+            [0.699812,0.879058,1.093058,1.372184,1.812461],
+            [0.697445,0.87553,1.087666,1.36343,1.795885],
+            [0.695482,0.872609,1.083211,1.356217,1.782288],
+            [0.693829,0.870152,1.076469,1.350171,1.770933],
+            [0.69241,0.868055,1.07628,1.34503,1.76131],
+            [0.691196,0.866245,1.073531,1.340606,1.75305],
+            [0.690132,0.864667,1.071137,1.336757,1.745884],
+            [0.689195,0.863279,1.069033,1.333379,1.739607],
+            [0.688363,0.862049,1.06717,1.330391,1.734064],
+            [0.68762,0.860951,1.065507,1.327728,1.729133]]
+        const simulation_times=100
+        function startSimulation() {
+            let failure=0
+            for(let i = 0;i < simulation_times;i++){
+                let n = document.getElementById('n').value
+                let normalRandomNumbers = []
+                let x_average = 0
+                for(let j=0; j<n; j++) {
+                    normalRandomNumbers.push(Math.cos(2*Math.PI*Math.random())*Math.sqrt(-2*Math.log(1-Math.random())))
+                    x_average += normalRandomNumbers[j]
+                }
+                x_average /= n
+                let s = 0
+                if(document.getElementById("σ").value==1){
+                    s = 1
+                }else{
+                    for(let j=0;j<n;j++){
+                        s += Math.pow(normalRandomNumbers[j] - x_average,2)
+                    }
+                    s /= (n-1)
+                    s = Math.sqrt(s)
+                }
+                let alpha_2 = (document.getElementById("σ").value==1?normal_distribution_list[document.getElementById('α').value]:t_distribution_table[n-5][document.getElementById('α').value])
+                let r = s * alpha_2 / Math.sqrt(n)
+                let range_bottom = x_average - r
+                let range_top = x_average + r
+                console.log(i,2*r)
+                if(range_bottom>0 || range_top<0){
+                    document.getElementById("result_"+i).style.backgroundColor = "rgb(200,30,30)"
+                    failure += 1
+                }else{
+                    document.getElementById("result_"+i).style.backgroundColor = "rgb(30,200,30)"
+                }
+                document.getElementById("result_"+i).style.height = ((range_top - range_bottom)*10)+"rem"
+                document.getElementById("result_"+i).style.top = ((2 - range_top)*10)+"rem"
+            }
+            if(document.getElementById("σ").value==1){
+                document.getElementById("explanation").innerHTML = "方差已知情况下，对均值0做区间估计，实验次数100次，每次实验的结果如下图所示，其中红色的区间不包含真值，其频率为"+(simulation_times-failure)/simulation_times+".可以观察到区间的长度与样本取值无关."
+            }else{
+                document.getElementById("explanation").innerHTML = "方差未知情况下，对均值0做区间估计，实验次数100次，每次实验的结果如下图所示，其中红色的区间不包含真值，其频率为"+(simulation_times-failure)/simulation_times+".可以观察到区间的长度与样本取值有关，每次实验得到的区间长度是变化的."
+            }
+        }
+    </script>
+</html>
