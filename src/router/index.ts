@@ -1,7 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import home from '../pages/home/home.vue'
-import error from '../pages/error/error.vue'
-import interval_estimate from '../pages/interval_estimate/interval_estimate.vue'
 
 const router = createRouter({
   // history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,17 +7,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: home
+      component: () => import('../pages/home/home.vue')
     },
     {
       path: '/interval-estimate',
       name: 'intervalEstimate',
-      component: interval_estimate,
+      component: () => import('../pages/interval_estimate/interval_estimate.vue'),
+    },
+    {
+      path: '/resume',
+      name: 'resume',
+      component: () => import('../pages/resume/resume.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'notFound',
-      component: error
+      component: () => import('../pages/error/error.vue')
     }
   ],
 })
