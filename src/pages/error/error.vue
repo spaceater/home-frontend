@@ -1,12 +1,13 @@
 <template>
   <iframe
-    src="/static/error/error.html"
+    :src="buildStaticUrl('/error/error.html')"
     style="border:none; width:100%; height:100%; display:block;"
     ref="errorFrame"></iframe>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref} from 'vue'
+import { onMounted, onBeforeUnmount, ref } from 'vue'
+import { buildStaticUrl } from '@/config/static'
 
 const errorFrame = ref<HTMLIFrameElement | null>(null)
 

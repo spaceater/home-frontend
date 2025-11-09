@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简历</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    body{
+      font-size: 14px;
+    }
+    /* div{
+      outline: 1px black solid;
+    } */
+    table{
+      width: 100%;
+    }
+    table.content-title td:nth-child(1){
+      width: 35%;
+      text-align: start;
+    }
+    table.content-title td:nth-child(2){
+      width: 30%;
+      text-align: center;
+    }
+    table.content-title td:nth-child(3){
+      width: 35%;
+      text-align: end;
+    }
+    ul{
+      margin: 0 0 0 20px;
+    }
+    li{
+      font-size: 0.8rem;
+    }
+    a{
+      color: black;
+    }
+    #content{
+      position: absolute;
+      width: 210mm;
+      height: 297mm;
+      /* left: 50%;
+      transform: translateX(-50%);
+      outline: 1px black solid; */
+    }
+    .line{
+      position: relative;
+      margin: 0 50px;
+      font-size: 16px;
+      font-weight: bold;
+      display: grid;
+      grid-template-columns: 67px 65px auto;
+      align-items: center;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .line::before{
+      content: '';
+      position: relative;
+      top: 1px;
+      height: 2px;
+      background-color: black;
+    }
+    .line::after{
+      content: '';
+      position: relative;
+      top: 1px;
+      height: 2px;
+      background-color: black;
+    }
+    .chapter{
+      margin: 0 60px;
+    }
+  </style>
+</head>
+<body>
+  <div id="content">
+    <div class="chapter" style="margin: 20px 60px 0 60px;">
+      <!-- 横向格式 -->
+      <!-- <div style="left: 20px;height: 80px;width: 360px;position: relative;display: flex;margin: 5px auto;">
+        <div style="display: flex;justify-content: center;align-items: center;">
+          <img src="figure.png" style="width: 80px;outline: 1px solid black;">
+        </div>
+        <div style="width: 70px;display: flex;justify-content: center;align-items: center;">
+          <b style="font-size: 24px;">赵旷</b>
+        </div>
+        <div style="display: flex;flex-direction: column;align-items: start;">
+          <div style="display: flex;margin: auto 0;">
+            <div style="width: 16px;position: relative;top: 2px;">
+              <img src="phone.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+            <div style="position: relative;left: 1px;">
+              <a href="weixin://dl/chat?username=zhaokuangweixin" target="_blank">+86 18721220949</a>
+            </div>
+          </div>
+          <div style="display: flex;margin: auto 0;">
+            <div style="width: 16px;position: relative;top: 3.5px;">
+              <img src="mail.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+            <div style="position: relative;left: 3px;">
+              <a href="mailto:zhaokuangDK@163.com" target="_blank">zhaokuangDK@163.com</a>
+            </div>
+          </div>
+          <div style="display: flex;margin: auto 0;">
+            <div style="width: 16px;position: relative;top: 3px;">
+              <img src="github.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+            <div style="position: relative;left: 2px;">
+              <a href="https://github.com/spaceater" target="_blank">https://github.com/spaceater</a>
+            </div>
+          </div>
+        </div>
+      </div> -->
+      <!-- 纵向格式 -->
+      <!-- <div style="display: flex;width: 160px;margin: 0 auto;">
+        <div style="width: 80px;display: flex;justify-content: center;align-items: center;">
+          <img src="figure.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+        </div>
+        <div style="width: 70px;height: 80px;display: flex;justify-content: center;align-items: center;">
+          <b style="font-size: 24px;">赵旷</b>
+        </div>
+      </div>
+      <div style="display: flex;margin: 3px auto;">
+        <div style="display: flex;margin: 0 auto;">
+          <div style="width: 16px;position: relative;top: 2px;">
+            <img src="phone.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+          </div>
+          <div style="position: relative;left: 1px;">
+            <a href="weixin://dl/chat?username=zhaokuangweixin" target="_blank">+86 18721220949</a>
+          </div>
+        </div>
+        <div style="display: flex;margin: 0 auto;">
+          <div style="width: 16px;position: relative;top: 3.5px;">
+            <img src="mail.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+          </div>
+          <div style="position: relative;left: 3px;">
+            <a href="mailto:zhaokuangDK@163.com" target="_blank">zhaokuangDK@163.com</a>
+          </div>
+        </div>
+        <div style="display: flex;margin: 0 auto;">
+          <div style="width: 16px;position: relative;top: 3px;">
+            <img src="github.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+          </div>
+          <div style="position: relative;left: 2px;">
+            <a href="https://github.com/spaceater" target="_blank">https://github.com/spaceater</a>
+          </div>
+        </div>
+      </div> -->
+      <!-- 左右格式 -->
+      <div style="display: flex;justify-content: space-between;align-items: center;">
+        <div style="display: flex;align-items: center;">
+          <div style="width: 90px;height: 90px;box-sizing: border-box;border: 1px solid black;display: flex;justify-content: center;align-items: center;">
+            <img src="figure.png" style="width: 100%;object-fit: cover;">
+          </div>
+          <div style="width: 80px;display: flex;justify-content: center;align-items: center;">
+            <b style="font-size: 26px;">赵旷</b>
+          </div>
+        </div>
+        <div style="display: flex;flex-direction: column;align-items: end;gap: 4px;">
+          <div style="display: flex;">
+            <div style="position: relative;left: -6px;">
+              <a href="weixin://dl/chat?username=zhaokuangweixin" target="_blank">+86 18721220949</a>
+            </div>
+            <div style="width: 16px;position: relative;top: 3px;">
+              <img src="phone.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+          </div>
+          <div style="display: flex;">
+            <div style="position: relative;left: -6px;">
+              <a href="mailto:zhaokuangDK@163.com" target="_blank">zhaokuangDK@163.com</a>
+            </div>
+            <div style="width: 16px;position: relative;top: 4.5px;">
+              <img src="mail.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+          </div>
+          <div style="display: flex;">
+            <div style="position: relative;left: -6px;">
+              <a href="https://github.com/spaceater" target="_blank">github.com/spaceater</a>
+            </div>
+            <div style="width: 16px;position: relative;top: 4px;">
+              <img src="github.png" style="max-width: 100%;max-height: 100%;object-fit: contain;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="line">教育背景</div>
+    <div class="chapter">
+      <b><table class="content-title">
+        <tr>
+          <td>2023.09~2027.06</td>
+          <td>北京科技大学</td>
+          <td>物联网工程（本科）</td>
+        </tr>
+      </table></b>
+      <ul>
+        <li><b>主修课程</b>：数字逻辑、数据与算法、计算机组成原理、电子电路基础与分析技术、操作系统、运筹优化与控制、计算机网络、数据库系统原理、概率论与数理统计、嵌入式系统、算法设计与分析、汇编语言与接口技术</li>
+        <li><b>专业排名</b>：32/234</li>
+      </ul>
+      <b><table class="content-title">
+        <tr>
+          <td>2024.09~2027.06</td>
+          <td>北京科技大学</td>
+          <td>国际经济与贸易（双学位）</td>
+        </tr>
+      </table></b>
+    </div>
+    <div class="line">实习经历</div>
+    <div class="chapter">
+      <b><table class="content-title">
+        <tr>
+          <td>后端工程师</td>
+          <td><a href="https://www.coolqq.com/act" target="_blank">北京酷奇奇科技有限公司</a></td>
+          <td>2025.06~2025.08</td>
+        </tr>
+      </table></b>
+      <ul>
+        <li><b>主要工作内容</b>：
+          <ul>
+            <li><b>后端开发</b>：开发和维护后台接口（主要为音色克隆和TTS接口），根据新增或调整的业务逻辑设计和优化数据库。</li>
+            <li style="white-space: nowrap;"><b>微信小程序和前端开发</b>：根据用户-硬件-角色逻辑开发微信小程序，开发和维护部分前台网页，进行前后端联调。</li>
+            <li><b>ChinaJoy专项开发</b>：基于已有业务逻辑开发ChinaJoy展DEMO，主要解决硬件绑定角色和多角色对话的延时问题。作为技术支持到场参与展会，解决现场突发问题并兼职公司产品讲解。</li>
+          </ul>
+        </li>
+        <li><b>技术关键词</b>：Go + Vue3 + Wxml</li>
+      </ul>
+    </div>
+    <div class="line">个人项目</div>
+    <div class="chapter">
+      <b><table class="content-title">
+        <tr>
+          <td>LLM对话网站开发与部署</td>
+          <td><a href="https://www.ismismtag.com/ai" target="_blank">www.ismismtag.com</a></td>
+          <td>2025.08~2025.10</td>
+        </tr>
+      </table></b>
+      <ul>
+        <li><b>项目简介</b>：哲学分享⽹站，访问量超10万次，与其他组织合作，提供LLM对话服务。后端使用Go实现，支持多任务调度和排队机制，LLM在本地部署，后端在对话层调用其接口。前端使用vue实现，通过websocket实时获取后端任务队列信息。用户可选择LLM模型，后端根据模型选择对应的接口，用户任务的排队和执行信息从服务器实时更新。</li>
+        <li><b>技术细节</b>：
+          <ul>
+            <li><b>任务保活</b>：前端发起任务后需在规定时间内连接后端返回的websocket以注册此任务，在任务排队和执行过程中需要保持连接，否则任务会被后端中断以节省资源。在任务排队时，使用慢心跳机制允许规定时间内的重连。</li>
+            <li><b>多任务调度</b>：异步实现任务的注册-排队-执行-清理的流程调度，使用协程管理任务队列，保证任务的并发执行。使用异步广播和任务信息推送，实现前端数据的实时更新。</li>
+          </ul>
+        </li>
+        <li><b>技术关键词</b>：Go + Vue3 + TypeScript + MySQL</li>
+      </ul>
+      <b><table class="content-title">
+        <tr>
+          <td>个人网站开发与部署</td>
+          <td><a href="https://www.maybered.com" target="_blank">www.maybered.com</a></td>
+          <td>2024.05~至今</td>
+        </tr>
+      </table></b>
+      <ul>
+        <li><b>项目简介</b>：个人主页网站，访问量超1万次。使用node.js和express框架开发后端，实现了通用的静态文件服务器和格式转换、缓存机制。使用vue设计前端，使用同步-异步的图片加载策略。在本地Linux服务器上部署并⻓期管理，使⽤frp内⽹穿透与nginx后端路由和负载均衡，设计了自动化脚本自动维护和更新前后端。</li>
+        <li><b>技术细节</b>：
+          <ul>
+            <li><b>文件缓存系统</b>：静态文件服务器实现eTag机制减少文件传输次数，自动选择avif/webp/原始格式中最优图片格式、进行转换并缓存结果以减少转换次数。通过流式传输，提升图片传输速度和加载流畅度，提升网站性能。</li>
+          </ul>
+        </li>
+        <li><b>技术关键词</b>：Node.js + Vue3 + Nginx + Linux</li>
+      </ul>
+    </div>
+    <div class="line">团队项目</div>
+    <div class="chapter">
+      <b><table>
+        <tr>
+          <td style="text-align: start;">基于大语言模型的定制化预问诊门诊辅助系统</td>
+          <td style="text-align: start;">北京科技大学STRP项目</td>
+          <td style="text-align: end;">2025.03~至今</td>
+        </tr>
+      </table></b>
+      <ul>
+        <li><b>项目背景</b>：聚焦LLM的门诊场景应用，利用医患对话数据对通用大语言模型进行微调，构建适用于问诊场景的对话模型。使用ASR-TTS实现与问诊人的语音对话，使用todo-list和MCP控制对话流程，获得可供医生参考的信息。</li>
+        <li><b>担任职位</b>：队长兼第一小组负责人</li>
+        <li><b>具体工作</b>：大语言模型本地部署、调优；开发后端数据处理系统、ASR-TTS模块；统筹项目进度，分配任务。</li>
+        <li><b>技术细节</b>：
+          <ul>
+            <li><b>前后端搭建</b>：对话音频的采集、预处理，以及数据的回传，使用nginx负载优化，并对同一模型api进行复用，对内容进行初步总结并提供给医生端。</li>
+            <li><b>部署模型</b>：自建服务器平台，在CPU平台部署大语言模型（由第二小组微调）。</li>
+          </ul>
+        </li>
+        <li><b>技术关键词</b>：Go + Vue3 + Python + Nginx + llama.cpp + Docker</li>
+      </ul>
+    </div>
+    <div class="line">技术能力</div>
+    <div class="chapter">
+      <ul>
+        <li><b>后端开发</b>：了解并熟悉Go、Node.js等开发语言和框架，了解Java、Python等语言，能够进⾏后端开发。</li>
+        <li><b>前端开发</b>：了解并熟悉Vue3、原生html+css+js配合jQuery等开发⽹⻚前端。</li>
+        <li><b>C++</b>：精通C++（我的编程启蒙语言），熟悉相关代码开发⻛格和程序设计思路，熟悉C++的各种⾼级功能及其应用。</li>
+        <li><b>英语</b>：⼤学英语四、六级考试⼀次通过，阅读和⼝语能⼒强，能独⽴阅读英⽂技术⽂档和计算机相关论⽂。</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
